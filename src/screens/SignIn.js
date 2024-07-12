@@ -1,18 +1,35 @@
-import {View, TouchableOpacity, Text, StatusBar} from "react-native";
-import React, {useState} from "react";
+import {View, TouchableOpacity, Text, StatusBar, Alert} from "react-native";
+import React, {useState, useEffect} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import {useSDK} from "@metamask/sdk-react";
 
 import {svg} from "../svg";
 import {theme} from "../constants";
 import {components} from "../components";
+import Button from "../components/Button";
 
 const SignIn = ({navigation}) => {
   const [rememberMe, setRememberMe] = useState(false);
+  const {connect, account} = useSDK();
 
   const renderHeader = () => {
     return <components.Header title="Sign in" goBack={true} />;
   };
+
+  const connectWallet = async () => {
+    try {
+      await connect();
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (account) {
+      Alert.alert("Connected", `Wallet address: ${account}`);
+    }
+  }, [account]);
 
   const renderContent = () => {
     return (
@@ -114,6 +131,11 @@ const SignIn = ({navigation}) => {
           <components.Button
             title="Sign in"
             onPress={() => navigation.navigate("TabNavigator")}
+            containerStyle={{marginBottom: 8}}
+          />
+          <components.Button
+            title={"Connect MetaMask"}
+            onPress={connectWallet}
             containerStyle={{marginBottom: 30}}
           />
           <View
