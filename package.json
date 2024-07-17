@@ -15,6 +15,7 @@
     "@react-native-community/cli-platform-android": "^13.6.9",
     "@react-native-community/cli-platform-ios": "^13.6.9",
     "@react-native-masked-view/masked-view": "^0.2.8",
+    "@react-native/metro-config": "^0.74.85",
     "@react-navigation/native": "^6.1.0",
     "@react-navigation/stack": "^6.3.8",
     "@reduxjs/toolkit": "^1.9.1",
