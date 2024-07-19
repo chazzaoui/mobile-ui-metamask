@@ -8,7 +8,7 @@ import {
   FlatList,
   StatusBar,
 } from "react-native";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {useNavigation} from "@react-navigation/native";
 
@@ -52,7 +52,7 @@ const paymentTypes = [
   },
   {
     id: "4",
-    type: `Make a\nPayment`,
+    type: "Make a\nPayment",
     bgColor: "#EECC55",
     icon: <svg.TypeCardSvg />,
   },
@@ -61,6 +61,28 @@ const paymentTypes = [
 const Dashboard = () => {
   const navigation = useNavigation();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [portfolioValue, setPortfolioValue] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPortfolioValue = async () => {
+      try {
+        const res = await fetch(
+          "https://mobile-bank-ui-51cca19949a2.herokuapp.com/?format=json",
+        );
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        setPortfolioValue(data.portfolio_value);
+      } catch (error) {
+        setError(error.message);
+        console.error("Fetch error: ", error);
+      }
+    };
+
+    fetchPortfolioValue();
+  }, []);
 
   function updateCurrentSlideIndex(e) {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
@@ -123,6 +145,23 @@ const Dashboard = () => {
             <TouchableOpacity onPress={() => navigation.navigate("CardMenu")}>
               <svg.CreditCardSvg />
             </TouchableOpacity>
+          </View>
+          <View style={{paddingHorizontal: 20}}>
+            {error ? (
+              <Text style={{color: "red"}}>{`Error: ${error}`}</Text>
+            ) : (
+              <Text
+                style={{
+                  ...theme.FONTS.Mulish_400Regular,
+                  fontSize: 16,
+                  color: theme.COLORS.white,
+                  lineHeight: 16 * 1.6,
+                }}
+              >
+                Portfolio Value:{" "}
+                {portfolioValue !== null ? portfolioValue : "Loading..."}
+              </Text>
+            )}
           </View>
         </SafeAreaView>
         <FlatList
